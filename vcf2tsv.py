@@ -143,21 +143,25 @@ def vcf2tsv(query_vcf, out_tsv, skip_info_data, skip_genotype_data, keep_rejecte
       for format_tag in sorted(format_columns_header):
          if len(samples) > 0 and skip_genotype_data is False:
             sample_dat = rec.format(format_tag)
-            dim = sample_dat.shape
-            j = 0
-            ## sample-wise
-            while j < dim[0]:
-               if sample_dat[j].size > 1:
-                  d = ','.join(str(e) for e in np.ndarray.tolist(sample_dat[j]))
-                  dat = strip_null_values(d)
-                  if vcf_sample_genotype_data.has_key(samples[j]):
-                     vcf_sample_genotype_data[samples[j]][format_tag] = dat
-               else:
-                  d = str(sample_dat[j][0])
-                  dat = strip_null_values(d)
-                  if vcf_sample_genotype_data.has_key(samples[j]):
-                     vcf_sample_genotype_data[samples[j]][format_tag] = dat
-               j = j + 1
+            if sample_dat is None:
+               for j in xrange(len(samples)):
+                  vcf_sample_genotype_data[samples[j]][format_tag] = ""
+            else:
+               dim = sample_dat.shape
+               j = 0
+               ## sample-wise
+               while j < dim[0]:
+                  if sample_dat[j].size > 1:
+                     d = ','.join(str(e) for e in np.ndarray.tolist(sample_dat[j]))
+                     dat = strip_null_values(d)
+                     if vcf_sample_genotype_data.has_key(samples[j]):
+                        vcf_sample_genotype_data[samples[j]][format_tag] = dat
+                  else:
+                     d = str(sample_dat[j][0])
+                     dat = strip_null_values(d)
+                     if vcf_sample_genotype_data.has_key(samples[j]):
+                        vcf_sample_genotype_data[samples[j]][format_tag] = dat
+                  j = j + 1
       
       tsv_elements = []
       tsv_elements.append(fixed_fields_string)
